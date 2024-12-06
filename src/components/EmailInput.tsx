@@ -1,32 +1,52 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { toast } from '@/hooks/use-toast'
+import { useToast } from "@/hooks/use-toast"
+
+function isValidEmail(email: string) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
 
 export function EmailInput() {
   const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isValidInput, setIsValidInput] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    setIsValidInput(isValidEmail(email));
+  }, [email]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) {
+    if (!isValidInput) {
       toast({
         title: "Error",
-        description: "Please enter an email address.",
-        variant: "destructive",
+        description: "Please enter a valid email address.",
       })
       return
     }
-    // Here you would typically send the email to your server
-    console.log('Adding email:', email)
+    
+    setIsLoading(true)
+    //const result = await sendSingleEmail(email)
+    setIsLoading(false)
+
     toast({
       title: "Success",
       description: "Email added successfully!",
     })
     setEmail('')
   }
+
+  const buttonClass = `whitespace-nowrap transition-colors ${
+    isValidEmail(email)
+      ? "bg-accent hover:bg-accent-dark text-white"
+      : "bg-accent/50 hover:bg-accent/60 text-white cursor-not-allowed"
+  }`
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
@@ -39,9 +59,14 @@ export function EmailInput() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="flex-1"
+          disabled={isLoading}
         />
-        <Button type="submit" className="bg-accent hover:bg-accent-dark text-white whitespace-nowrap">
-          Add Email
+        <Button 
+          type="submit" 
+          className={buttonClass}
+          disabled={isLoading || !isValidEmail(email)}
+        >
+          {isLoading ? 'Adding...' : 'Add Email'}
         </Button>
       </div>
     </form>

@@ -4,7 +4,7 @@ export function Header() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center">
             <img 
-              src="https://www.storicard.com/_next/static/media/storis_savvi_color.3aa7ad1e.svg" 
+              src="https://www.storicard.com/_next/static/media/stori_s_color.571ad3f9.svg" 
               alt="Stori by Savvi"
               className="h-8 md:h-10"
             />

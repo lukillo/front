@@ -4,13 +4,15 @@ import { useState } from 'react'
 import { Header } from '@/components/Header'
 import { FileUpload } from '@/components/FileUpload'
 import { EmailInput } from '@/components/EmailInput'
-import { toast } from '@/hooks/use-toast'
+import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { sendFiles } from '@/utils/api'
 
 export default function AdminPage() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [csvFile, setCsvFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,29 +20,28 @@ export default function AdminPage() {
       toast({
         title: "Error",
         description: "Please upload both an image and a CSV file.",
-        variant: "destructive",
       })
       return
     }
 
     setIsLoading(true)
-    // const result = await sendFiles(imageFile, csvFile)
+    const result = await sendFiles(imageFile, csvFile)
     setIsLoading(false)
 
-    // if (result.success) {
-    //   toast({
-    //     title: "Success",
-    //     description: result.message || "Files uploaded successfully!",
-    //   })
-    //   setImageFile(null)
-    //   setCsvFile(null)
-    // } else {
-    //   toast({
-    //     title: "Error",
-    //     description: result.message || "Failed to upload files. Please try again.",
-    //     variant: "destructive",
-    //   })
-    // }
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: result.message || "Files uploaded successfully!",
+      })
+      setImageFile(null)
+      setCsvFile(null)
+    } else {
+      toast({
+        title: "Error",
+        description: result.message || "Failed to upload files. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
